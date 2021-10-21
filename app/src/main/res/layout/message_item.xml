@@ -5,8 +5,8 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:layout_margin="16dp">
-    <EditText
-        android:id="@+id/textEditText"
+    <TextView
+        android:id="@+id/textTextView"
         android:text="Text"
         android:textSize="20dp"
         android:layout_width="wrap_content"
