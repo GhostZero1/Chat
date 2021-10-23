@@ -2,6 +2,7 @@ package com.example.chatv3
 
 import android.app.Activity
 import android.content.ContentValues.TAG
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -50,6 +51,7 @@ class SingInActivity : AppCompatActivity() {
                         //updateUI(null)
                     }
                 }
+            startActivity(Intent(this@SingInActivity,MainActivity::class.java))
         }
     }
 
