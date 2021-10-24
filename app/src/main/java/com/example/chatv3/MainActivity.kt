@@ -1,15 +1,22 @@
 package com.example.chatv3
 
+import android.content.Intent
+import android.content.Intent.getIntent
+import android.content.Intent.getIntentOld
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.InputFilter
 import android.text.TextWatcher
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.Button
 import android.widget.ListView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -24,28 +31,36 @@ class MainActivity : AppCompatActivity() {
     lateinit var adapter: ChatAdapter
     lateinit var sendButton: Button
     lateinit var userName: String
-    lateinit var database: Firebase;
+    lateinit var database: Firebase
     lateinit var databaseReference: DatabaseReference
+    lateinit var userbaseReference: DatabaseReference
     lateinit var messagesChildEventListener: ChildEventListener
-
+    //lateinit var usersDatabaseReference: DatabaseReference
 
     //lateinit var userNameDatabaseReference: DatabaseReference
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        val database = Firebase.database
-        val databaseReference = database.getReference().child("messages")
+       // val database = Firebase.database
+        val databaseReference = Firebase.database.reference.child("messages")
+      //  val usersDatabaseReference = database.getReference().child("users")
 
 //
 //        databaseReference.setValue("Hello, World!")
 
         sendButton = findViewById(R.id.sendButton)
-        var userName = "Default User"
+
+        if (intent != null) {
+            userName = intent.getStringExtra("userName").toString()
+        } else {
+            var userName = "Default User"
+        }
+
         var messangesListView = findViewById<RecyclerView>(R.id.messanges)
         var chatMessages: List<MessageChat> = ArrayList<MessageChat>()
         var adapter = ChatAdapter(chatMessages as ArrayList<MessageChat>)
-        var linearLayout: LinearLayoutManager = LinearLayoutManager(this,LinearLayoutManager.VERTICAL, false)
+        var linearLayout: LinearLayoutManager =
+            LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         messangesListView.layoutManager = linearLayout
         messangesListView.adapter = adapter
         textEditText.addTextChangedListener(object : TextWatcher {
@@ -60,8 +75,7 @@ class MainActivity : AppCompatActivity() {
         textEditText.setFilters(arrayOf<InputFilter>(InputFilter.LengthFilter(100)))
         sendButton.setOnClickListener(View.OnClickListener {
 
-            var message: MessageChat =
-                MessageChat(text = textEditText.text.toString(), name = userName)
+            var message = MessageChat(text = textEditText.text.toString(), name = userName)
             // message.text = textEditText.text.toString()
             databaseReference.push().setValue(message)
             textEditText.setText("")
@@ -78,18 +92,21 @@ class MainActivity : AppCompatActivity() {
                     adapter.add(message)
                 }
             }
+
             override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
 //                Log.e(TAG, "onChildChanged:" + dataSnapshot!!.key)
 //
 //                // A message has changed
 //                val message = dataSnapshot.getValue(Message::class.java)
             }
+
             override fun onChildRemoved(snapshot: DataSnapshot) {
 //                Log.e(TAG, "onChildRemoved:" + dataSnapshot!!.key)
 //
 //                // A message has been removed
 //                val message = dataSnapshot.getValue(Message::class.java)
             }
+
             override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
 //                Log.e(TAG, "onChildMoved:" + dataSnapshot!!.key)
 //
@@ -106,8 +123,29 @@ class MainActivity : AppCompatActivity() {
         databaseReference.addChildEventListener(messagesChildEventListener)
     }
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        var inflater = menuInflater
+        inflater.inflate(R.menu.main_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.singOut -> {
+                Firebase.auth.signOut()
+                startActivity(Intent(this@MainActivity, SingInActivity::class.java))
+                true
+            }
+
+            else -> {
+                super.onOptionsItemSelected(item)
+            }
+
+        }
+
 
     }
+}
 
 
 
