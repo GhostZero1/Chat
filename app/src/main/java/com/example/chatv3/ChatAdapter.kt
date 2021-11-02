@@ -13,7 +13,8 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.activity_main.*
 
-class ChatAdapter(private val messages:ArrayList<MessageChat>): RecyclerView.Adapter<ChatAdapter.ViewHolder>() {
+class ChatAdapter(private val messages:ArrayList<MessageChat>): RecyclerView
+.Adapter<ChatAdapter.ViewHolder>() {
     class ViewHolder (view: View): RecyclerView.ViewHolder(view) {
         val textTextView: TextView
         val userName: TextView
